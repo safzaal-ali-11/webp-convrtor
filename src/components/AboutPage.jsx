@@ -89,26 +89,39 @@ export default function AboutPage() {
     <div className="about-wrapper">
       {/* 1. Hero Section */}
       <section className="about-hero glass-card">
-        <div className="hero-content">
-          <div className="profile-badge">
-            <GraduationCap size={16} color="var(--primary-glow)" />
-            <span>Software Engineering Graduate</span>
+        <div className="hero-layout">
+          <div className="hero-content">
+            <div className="profile-badge">
+              <GraduationCap size={16} color="var(--primary-glow)" />
+              <span>Software Engineering Graduate</span>
+            </div>
+
+            <h1 className="hero-name">Hi, I'm Afzaal Ali.</h1>
+
+            <p className="hero-tagline">
+              Software Engineering graduate focused on <strong>AI</strong>, <strong>AI Automation</strong>, and <strong>AI Agents</strong>.
+            </p>
+
+            <p className="hero-intro">
+              I enjoy learning how intelligent systems work and building practical applications that solve real problems. My current focus is strengthening my AI foundations, exploring automation workflows, and developing useful AI-powered products.
+            </p>
+
+            <div className="hero-badges">
+              <span className="hero-chip"><Brain size={14} /> AI & ML Foundations</span>
+              <span className="hero-chip"><Workflow size={14} /> n8n Automation</span>
+              <span className="hero-chip"><Bot size={14} /> AI Agents</span>
+            </div>
           </div>
 
-          <h1 className="hero-name">Hi, I'm Afzaal Ali.</h1>
-
-          <p className="hero-tagline">
-            Software Engineering graduate focused on <strong>AI</strong>, <strong>AI Automation</strong>, and <strong>AI Agents</strong>.
-          </p>
-
-          <p className="hero-intro">
-            I enjoy learning how intelligent systems work and building practical applications that solve real problems. My current focus is strengthening my AI foundations, exploring automation workflows, and developing useful AI-powered products.
-          </p>
-
-          <div className="hero-badges">
-            <span className="hero-chip"><Brain size={14} /> AI & ML Foundations</span>
-            <span className="hero-chip"><Workflow size={14} /> n8n Automation</span>
-            <span className="hero-chip"><Bot size={14} /> AI Agents</span>
+          <div className="hero-avatar-container">
+            <div className="avatar-frame">
+              <img
+                src="/afzaal-ali.jpg"
+                alt="Afzaal Ali - Software Engineer & AI Creator"
+                className="profile-img"
+              />
+              <div className="avatar-glow-ring" />
+            </div>
           </div>
         </div>
       </section>
