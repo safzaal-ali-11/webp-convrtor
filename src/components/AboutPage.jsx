@@ -24,31 +24,21 @@ export default function AboutPage() {
   const contactLinks = [
     {
       name: 'Email',
-      label: 'afzaal.ali@example.com',
-      url: 'mailto:afzaal.ali@example.com',
-      icon: Mail,
-      isPlaceholder: true
+      label: 'saith.afzaalali11@gmail.com',
+      url: 'mailto:saith.afzaalali11@gmail.com',
+      icon: Mail
     },
     {
       name: 'GitHub',
-      label: 'github.com/afzaal-ali',
-      url: 'https://github.com',
-      icon: Github,
-      isPlaceholder: true
+      label: 'github.com/safzaal-ali-11',
+      url: 'https://github.com/safzaal-ali-11',
+      icon: Github
     },
     {
       name: 'LinkedIn',
-      label: 'linkedin.com/in/afzaal-ali',
-      url: 'https://linkedin.com',
-      icon: Linkedin,
-      isPlaceholder: true
-    },
-    {
-      name: 'X / Twitter',
-      label: '@afzaal_ali',
-      url: 'https://x.com',
-      icon: Twitter,
-      isPlaceholder: true
+      label: 'linkedin.com/in/afzaal-ali-117a4440a',
+      url: 'https://www.linkedin.com/in/afzaal-ali-117a4440a/',
+      icon: Linkedin
     }
   ];
 
@@ -317,10 +307,6 @@ export default function AboutPage() {
             );
           })}
         </div>
-
-        <p className="placeholder-note mt-3">
-          ℹ️ Note: Contact endpoints are configured via standard social links. Update actual URLs in configuration as needed.
-        </p>
       </section>
     </div>
   );
