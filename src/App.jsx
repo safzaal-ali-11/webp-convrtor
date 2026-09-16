@@ -8,12 +8,15 @@ import {
   Plus,
   Image as ImageIcon,
   MoveVertical,
-  Move
+  Move,
+  User
 } from 'lucide-react';
 import { convertImageToWebP, formatBytes } from './utils/webpConverter';
 import CropModal from './components/CropModal';
+import AboutPage from './components/AboutPage';
 
 export default function App() {
+  const [activeTab, setActiveTab] = useState('converter'); // 'converter' | 'about'
   const [files, setFiles] = useState([]);
   const [convertedImages, setConvertedImages] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -175,233 +178,262 @@ export default function App() {
             </div>
           </div>
 
-          <div className="nav-controls">
-            {/* Target Keyword Input in Navbar */}
-            <div className="nav-keyword-group">
-              <span className="nav-keyword-label">Keyword:</span>
-              <input
-                type="text"
-                className="nav-keyword-input"
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                placeholder="e.g. keyword"
-              />
-            </div>
-
-            {/* Quality Slider in Navbar */}
-            <div className="nav-quality-group">
-              <span className="nav-quality-label">Quality ({quality}%):</span>
-              <input
-                type="range"
-                min="10"
-                max="100"
-                className="nav-quality-slider"
-                value={quality}
-                onChange={(e) => setQuality(e.target.value)}
-              />
-            </div>
-
-            {/* Hidden Single File Input */}
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              multiple={false}
-              accept="image/*,.heic,.heif,.avif,.webp,.svg,.bmp,.tiff"
-              style={{ display: 'none' }}
-            />
-
-            {/* Upload Picture Button in Navbar */}
-            <button 
-              className="btn btn-upload-nav" 
-              onClick={() => fileInputRef.current?.click()}
-              title="Upload picture one by one"
+          {/* Navigation Tabs */}
+          <nav className="nav-tabs" aria-label="Main Navigation">
+            <button
+              className={`nav-tab-btn ${activeTab === 'converter' ? 'active' : ''}`}
+              onClick={() => setActiveTab('converter')}
             >
-              <Plus size={18} />
-              <span>Upload Picture</span>
+              <Zap size={16} />
+              <span>Converter</span>
             </button>
+            <button
+              className={`nav-tab-btn ${activeTab === 'about' ? 'active' : ''}`}
+              onClick={() => setActiveTab('about')}
+            >
+              <User size={16} />
+              <span>About Me</span>
+            </button>
+          </nav>
 
-            {/* Zip Download Button */}
-            {convertedImages.length > 0 && (
-              <button className="btn btn-primary nav-btn-compact" onClick={handleDownloadZip} title="Download All as ZIP">
-                <Download size={16} />
-                <span>Download ZIP</span>
-              </button>
-            )}
+          {/* Converter Controls in Navbar (shown when converter tab active) */}
+          {activeTab === 'converter' && (
+            <div className="nav-controls">
+              {/* Target Keyword Input in Navbar */}
+              <div className="nav-keyword-group">
+                <span className="nav-keyword-label">Keyword:</span>
+                <input
+                  type="text"
+                  className="nav-keyword-input"
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  placeholder="e.g. keyword"
+                />
+              </div>
 
-            {/* Clear All Button */}
-            {convertedImages.length > 0 && (
-              <button className="btn btn-danger nav-btn-compact" onClick={handleClearAll} title="Clear All">
-                <Trash2 size={16} />
+              {/* Quality Slider in Navbar */}
+              <div className="nav-quality-group">
+                <span className="nav-quality-label">Quality ({quality}%):</span>
+                <input
+                  type="range"
+                  min="10"
+                  max="100"
+                  className="nav-quality-slider"
+                  value={quality}
+                  onChange={(e) => setQuality(e.target.value)}
+                />
+              </div>
+
+              {/* Hidden Single File Input */}
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                multiple={false}
+                accept="image/*,.heic,.heif,.avif,.webp,.svg,.bmp,.tiff"
+                style={{ display: 'none' }}
+              />
+
+              {/* Upload Picture Button in Navbar */}
+              <button 
+                className="btn btn-upload-nav" 
+                onClick={() => fileInputRef.current?.click()}
+                title="Upload picture one by one"
+              >
+                <Plus size={18} />
+                <span>Upload Picture</span>
               </button>
-            )}
-          </div>
+
+              {/* Zip Download Button */}
+              {convertedImages.length > 0 && (
+                <button className="btn btn-primary nav-btn-compact" onClick={handleDownloadZip} title="Download All as ZIP">
+                  <Download size={16} />
+                  <span>Download ZIP</span>
+                </button>
+              )}
+
+              {/* Clear All Button */}
+              {convertedImages.length > 0 && (
+                <button className="btn btn-danger nav-btn-compact" onClick={handleClearAll} title="Clear All">
+                  <Trash2 size={16} />
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </header>
 
       <main className="container mt-navbar">
-        {/* Empty State when no photos uploaded */}
-        {convertedImages.length === 0 && (
-          <div className="empty-upload-card glass-card">
-            <div className="empty-icon-wrap">
-              <ImageIcon size={48} className="empty-icon" />
-            </div>
-            <h3>No Pictures Uploaded Yet</h3>
-            <p>Click the <strong>Upload Picture</strong> button to add your photos one by one.</p>
-            <p className="empty-hint">First image will be named <code>{keyword}-1.webp</code>, second <code>{keyword}-2.webp</code>, etc.</p>
-            
-            <button 
-              className="btn btn-upload-main mt-3"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Plus size={20} />
-              <span>Upload Picture</span>
-            </button>
-          </div>
-        )}
-
-        {/* Stats Summary Bar */}
-        {convertedImages.length > 0 && (
-          <div className="stats-bar">
-            <div className="stat-box">
-              <div className="val">{convertedImages.length}</div>
-              <div className="lbl">Total Photos</div>
-            </div>
-            <div className="stat-box">
-              <div className="val">{formatBytes(totalOrigBytes)}</div>
-              <div className="lbl">Original Size</div>
-            </div>
-            <div className="stat-box">
-              <div className="val" style={{ color: 'var(--success)' }}>{formatBytes(totalWebpBytes)}</div>
-              <div className="lbl">Converted WebP Size</div>
-            </div>
-            <div className="stat-box">
-              <div className="val" style={{ color: 'var(--primary-glow)' }}>{overallSavingsPct}%</div>
-              <div className="lbl">Space Saved ({formatBytes(totalSavedBytes)})</div>
-            </div>
-          </div>
-        )}
-
-        {/* Converted Images List Header */}
-        {convertedImages.length > 0 && (
-          <div className="batch-header">
-            <h2>
-              Converted Files ({convertedImages.length})
-            </h2>
-          </div>
-        )}
-
-        {/* Converted Images List (Top to Bottom sequence) */}
-        <div className="image-grid">
-          {convertedImages.map((item) => {
-            const isSeoGreen = item.webpSize < 100 * 1024;
-            const isSeoYellow = item.webpSize >= 100 * 1024 && item.webpSize < 250 * 1024;
-
-            return (
-              <div key={item.id} className="image-card">
-                <img src={item.webpUrl} alt={item.webpName} className="img-preview" />
-
-                <div className="img-info">
-                  <div className="img-title">{item.webpName}</div>
-                  <div className="img-sub">
-                    <span>Orig: <strong>{formatBytes(item.originalSize)}</strong></span>
-                    <span>➜ WebP: <strong style={{ color: 'var(--success)' }}>{formatBytes(item.webpSize)}</strong></span>
-                    <span style={{ color: 'var(--primary-glow)', fontWeight: 'bold' }}>(-{item.savingsPercent}%)</span>
-                    <span>Dimensions: <strong>{item.width}x{item.height} {aspectRatio169 ? '(16:9)' : ''}</strong></span>
-                    
-                    {item.webpSize >= 90 * 1024 && item.webpSize <= 95 * 1024 ? (
-                      <span className="seo-badge seo-green">
-                        <CheckCircle2 size={12} /> 🎯 Perfect SEO Weight (90–95 KB)
-                      </span>
-                    ) : isSeoGreen ? (
-                      <span className="seo-badge seo-green">
-                        <CheckCircle2 size={12} /> 🟢 Google PageSpeed Ready ({formatBytes(item.webpSize)})
-                      </span>
-                    ) : isSeoYellow ? (
-                      <span className="seo-badge seo-yellow">
-                        🟡 Good (&lt;250KB)
-                      </span>
-                    ) : (
-                      <span className="seo-badge" style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#fca5a5' }}>
-                        🔴 Heavy (&gt;250KB)
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Position Adjuster Controls */}
-                  <div className="img-position-bar">
-                    <span className="pos-label">
-                      <MoveVertical size={13} color="var(--primary-glow)" /> Crop Position:
-                    </span>
-                    <div className="pos-btn-group">
-                      <button
-                        className={`btn-pos ${item.cropY === 0 ? 'active' : ''}`}
-                        onClick={() => handleUpdateCropY(item.id, 0)}
-                        title="Align crop to Top of image"
-                      >
-                        Top
-                      </button>
-                      <button
-                        className={`btn-pos ${item.cropY === 50 ? 'active' : ''}`}
-                        onClick={() => handleUpdateCropY(item.id, 50)}
-                        title="Align crop to Center of image"
-                      >
-                        Center
-                      </button>
-                      <button
-                        className={`btn-pos ${item.cropY === 100 ? 'active' : ''}`}
-                        onClick={() => handleUpdateCropY(item.id, 100)}
-                        title="Align crop to Bottom of image"
-                      >
-                        Bottom
-                      </button>
-                    </div>
-
-                    <button
-                      className="btn-open-modal"
-                      onClick={() => handleOpenCropModal(item)}
-                      title="Open popup to drag and adjust crop position visually"
-                    >
-                      <Move size={14} /> Drag & Adjust Popup
-                    </button>
-                  </div>
+        {/* TAB 1: CONVERTER VIEW */}
+        {activeTab === 'converter' && (
+          <>
+            {/* Empty State when no photos uploaded */}
+            {convertedImages.length === 0 && (
+              <div className="empty-upload-card glass-card">
+                <div className="empty-icon-wrap">
+                  <ImageIcon size={48} className="empty-icon" />
                 </div>
+                <h3>No Pictures Uploaded Yet</h3>
+                <p>Click the <strong>Upload Picture</strong> button to add your photos one by one.</p>
+                <p className="empty-hint">First image will be named <code>{keyword}-1.webp</code>, second <code>{keyword}-2.webp</code>, etc.</p>
+                
+                <button 
+                  className="btn btn-upload-main mt-3"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Plus size={20} />
+                  <span>Upload Picture</span>
+                </button>
+              </div>
+            )}
 
-                <div className="img-actions">
-                  <button
-                    className="btn btn-primary"
-                    style={{ padding: '0.5rem 0.9rem', fontSize: '0.85rem' }}
-                    onClick={() => handleDownloadSingle(item)}
-                    title="Download single WebP image"
-                  >
-                    <Download size={16} /> WebP
-                  </button>
-                  <button
-                    className="btn btn-secondary btn-danger"
-                    style={{ padding: '0.5rem' }}
-                    onClick={() => handleRemoveItem(item.id)}
-                    title="Remove from list"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+            {/* Stats Summary Bar */}
+            {convertedImages.length > 0 && (
+              <div className="stats-bar">
+                <div className="stat-box">
+                  <div className="val">{convertedImages.length}</div>
+                  <div className="lbl">Total Photos</div>
+                </div>
+                <div className="stat-box">
+                  <div className="val">{formatBytes(totalOrigBytes)}</div>
+                  <div className="lbl">Original Size</div>
+                </div>
+                <div className="stat-box">
+                  <div className="val" style={{ color: 'var(--success)' }}>{formatBytes(totalWebpBytes)}</div>
+                  <div className="lbl">Converted WebP Size</div>
+                </div>
+                <div className="stat-box">
+                  <div className="val" style={{ color: 'var(--primary-glow)' }}>{overallSavingsPct}%</div>
+                  <div className="lbl">Space Saved ({formatBytes(totalSavedBytes)})</div>
                 </div>
               </div>
-            );
-          })}
-        </div>
+            )}
 
-        {/* Add Picture Button ALWAYS at the Bottom of All Images */}
-        {convertedImages.length > 0 && (
-          <div className="add-picture-bottom-wrap">
-            <button 
-              className="btn btn-upload-main btn-bottom-add" 
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Plus size={20} />
-              <span>Add Picture</span>
-            </button>
-          </div>
+            {/* Converted Images List Header */}
+            {convertedImages.length > 0 && (
+              <div className="batch-header">
+                <h2>
+                  Converted Files ({convertedImages.length})
+                </h2>
+              </div>
+            )}
+
+            {/* Converted Images List (Top to Bottom sequence) */}
+            <div className="image-grid">
+              {convertedImages.map((item) => {
+                const isSeoGreen = item.webpSize < 100 * 1024;
+                const isSeoYellow = item.webpSize >= 100 * 1024 && item.webpSize < 250 * 1024;
+
+                return (
+                  <div key={item.id} className="image-card">
+                    <img src={item.webpUrl} alt={item.webpName} className="img-preview" />
+
+                    <div className="img-info">
+                      <div className="img-title">{item.webpName}</div>
+                      <div className="img-sub">
+                        <span>Orig: <strong>{formatBytes(item.originalSize)}</strong></span>
+                        <span>➜ WebP: <strong style={{ color: 'var(--success)' }}>{formatBytes(item.webpSize)}</strong></span>
+                        <span style={{ color: 'var(--primary-glow)', fontWeight: 'bold' }}>(-{item.savingsPercent}%)</span>
+                        <span>Dimensions: <strong>{item.width}x{item.height} {aspectRatio169 ? '(16:9)' : ''}</strong></span>
+                        
+                        {item.webpSize >= 90 * 1024 && item.webpSize <= 95 * 1024 ? (
+                          <span className="seo-badge seo-green">
+                            <CheckCircle2 size={12} /> 🎯 Perfect SEO Weight (90–95 KB)
+                          </span>
+                        ) : isSeoGreen ? (
+                          <span className="seo-badge seo-green">
+                            <CheckCircle2 size={12} /> 🟢 Google PageSpeed Ready ({formatBytes(item.webpSize)})
+                          </span>
+                        ) : isSeoYellow ? (
+                          <span className="seo-badge seo-yellow">
+                            🟡 Good (&lt;250KB)
+                          </span>
+                        ) : (
+                          <span className="seo-badge" style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#fca5a5' }}>
+                            🔴 Heavy (&gt;250KB)
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Position Adjuster Controls */}
+                      <div className="img-position-bar">
+                        <span className="pos-label">
+                          <MoveVertical size={13} color="var(--primary-glow)" /> Crop Position:
+                        </span>
+                        <div className="pos-btn-group">
+                          <button
+                            className={`btn-pos ${item.cropY === 0 ? 'active' : ''}`}
+                            onClick={() => handleUpdateCropY(item.id, 0)}
+                            title="Align crop to Top of image"
+                          >
+                            Top
+                          </button>
+                          <button
+                            className={`btn-pos ${item.cropY === 50 ? 'active' : ''}`}
+                            onClick={() => handleUpdateCropY(item.id, 50)}
+                            title="Align crop to Center of image"
+                          >
+                            Center
+                          </button>
+                          <button
+                            className={`btn-pos ${item.cropY === 100 ? 'active' : ''}`}
+                            onClick={() => handleUpdateCropY(item.id, 100)}
+                            title="Align crop to Bottom of image"
+                          >
+                            Bottom
+                          </button>
+                        </div>
+
+                        <button
+                          className="btn-open-modal"
+                          onClick={() => handleOpenCropModal(item)}
+                          title="Open popup to drag and adjust crop position visually"
+                        >
+                          <Move size={14} /> Drag & Adjust Popup
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="img-actions">
+                      <button
+                        className="btn btn-primary"
+                        style={{ padding: '0.5rem 0.9rem', fontSize: '0.85rem' }}
+                        onClick={() => handleDownloadSingle(item)}
+                        title="Download single WebP image"
+                      >
+                        <Download size={16} /> WebP
+                      </button>
+                      <button
+                        className="btn btn-secondary btn-danger"
+                        style={{ padding: '0.5rem' }}
+                        onClick={() => handleRemoveItem(item.id)}
+                        title="Remove from list"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Add Picture Button ALWAYS at the Bottom of All Images */}
+            {convertedImages.length > 0 && (
+              <div className="add-picture-bottom-wrap">
+                <button 
+                  className="btn btn-upload-main btn-bottom-add" 
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Plus size={20} />
+                  <span>Add Picture</span>
+                </button>
+              </div>
+            )}
+          </>
         )}
+
+        {/* TAB 2: ABOUT ME VIEW */}
+        {activeTab === 'about' && <AboutPage />}
       </main>
 
       {/* Interactive Crop Position Popup Modal */}
